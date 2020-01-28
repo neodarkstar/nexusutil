@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -51,7 +50,7 @@ func GetDownloadURL(version string) string {
 }
 
 // DownloadCQLFile Download the init.cql file from nexus
-func DownloadCQLFile(version string) ([]byte, io.Reader) {
+func DownloadCQLFile(version string) io.ReadCloser {
 	url := GetDownloadURL(version)
 	res, err := http.Get(url)
 
@@ -59,11 +58,39 @@ func DownloadCQLFile(version string) ([]byte, io.Reader) {
 		log.Fatal(err)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	// defer res.Body.Close()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return body, res.Body
+	return res.Body
 }
+
+// // ParseInitCQL Applies the variables to the init cql file
+// func ParseInitCQL(init io.Reader) {
+// 	keyspace := "unit_tests"
+// 	class := "SimpleStrategy"
+// 	replicationFactor := 3
+// 	datacenter := "replication_factor"
+
+// 	scanner := bufio.NewScanner(init)
+
+// 	for scanner.Scan() {
+// 		line := scanner.Text()
+
+// 		regexpKeyspace := regexp.MustCompile(`<KEYSPACE>`)
+// 		regexpClass := regexp.MustCompile(`<STRATEGY>`)
+// 		regexpDatacenter := regexp.MustCompile(`<DATACENTER>`)
+// 		regexpReplFactor := regexp.MustCompile(`<REPLICATION_FACTOR>`)
+// 		regexpSemicolon := regexp.MustCompile(`;`)
+
+// 		state1 := regexpKeyspace.ReplaceAllLiteralString(line, keyspace)
+// 		state2 := regexpClass.ReplaceAllLiteralString(state1, class)
+// 		state3 := regexpReplFactor.ReplaceAllLiteralString(state2, strconv.Itoa(replicationFactor))
+// 		state4 := regexpDatacenter.ReplaceAllLiteralString(state3, datacenter)
+// 		state5 := regexpSemicolon.ReplaceAllLiteralString(state4, "")
+
+// 		fmt.Printf("Executing: %s\n", state5)
+// 	}
+// }

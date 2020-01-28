@@ -13,13 +13,19 @@ func TestGetDownloadUrl(t *testing.T) {
 }
 
 func TestDownloadCQLFile(t *testing.T) {
-	body, reader := DownloadCQLFile("1.1.6-RC1")
-
-	if len(body) == 0 {
-		t.Error("Error")
-	}
+	reader := DownloadCQLFile("1.1.6-RC1")
 
 	if reader == nil {
 		t.Error("Reader Error")
 	}
 }
+
+// func TestParseInitCQL(t *testing.T) {
+// 	reader := DownloadCQLFile("1.1.6-RC1")
+
+// 	ParseInitCQL(reader)
+
+// 	if reader == nil {
+// 		t.Error("Reader Error")
+// 	}
+// }
